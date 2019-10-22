@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  db:
+    image: mariadb:latest
+    ports:
+      - "3999:3306"
+    volumes:
+      - ./.docker/db:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: arvan
+
+  web:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    links:
+      - db
+    restart: always
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8081:80"
