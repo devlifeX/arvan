@@ -9,7 +9,7 @@
             <input type="url" class="form-control" id="domain" placeholder="yourdomain.com" />
           </div>
           <div class="form-group">
-            <button type="button" class="btn btn-primary">Add domain</button>
+            <VueLoadingButton :loading="loading" @click.native="clickHandler">Add domain</VueLoadingButton>
           </div>
         </form>
       </div>
@@ -18,9 +18,23 @@
 </template>
 
 <script>
+import VueLoadingButton from "./vue-loading-button";
+
+import { send } from "../api.js";
+
 export default {
-  mounted() {
-    console.log("Component mounted.");
+  methods: {
+    clickHandler: () => {
+      send();
+    }
+  },
+  data() {
+    return {
+      loading: false
+    };
+  },
+  components: {
+    VueLoadingButton
   }
 };
 </script>
