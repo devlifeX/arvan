@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10">
-            <h2>All Doamins</h2>
+            <h2>All Domains</h2>
             <show-domains></show-domains>
         </div>
          <div class="col-md-2">
