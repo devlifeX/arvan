@@ -18,8 +18,8 @@ class Domain extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->string('domain')->unique()->index();
             $table->string('activation_token');
-            $table->boolean('activation_status');
-            $table->string('activation_type');
+            $table->boolean('activation_status')->default(false);
+            $table->string('activation_type')->default('file');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
         });
