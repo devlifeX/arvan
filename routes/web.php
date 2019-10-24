@@ -22,4 +22,4 @@ Route::get('/add', 'HomeController@add')->name('add');
 
 
 // Route::get('/domain', 'DomainController@index');
-Route::get('/domain/create', 'DomainController@create');
+Route::post('/domain/create', 'DomainController@create');

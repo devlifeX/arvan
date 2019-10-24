@@ -4,10 +4,8 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DomainModel extends Model
+class Domain extends Model
 {
-    public $table = "domains";
-
     protected $guarded = [];
 
     protected $hidden = [
@@ -19,6 +17,5 @@ class DomainModel extends Model
         $this->hasOne(User::class);
     }
 
-    public function AddDomain()
-    { }
+
 }
