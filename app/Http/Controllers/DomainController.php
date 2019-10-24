@@ -59,6 +59,58 @@ class DomainController extends Controller
         }
     }
 
+    public function confirm(Domain $domain, Request $req)
+    {
+        $validated = $req->validate([
+            'domain' => 'url',
+        ]);
+
+        $requestedDomain = $this->getDomainOfCurrentUser($domain, $validated['domain']);
+        if ($requestedDomain->isEmpty()) {
+            return $this->res(false, ['message' => "Bad domain!"]);
+        }
+
+        $status = $this->confirmDomain($requestedDomain);
+        if ($status) {
+            $this->activateDomain($domain, $validated['domain']);
+            return $this->res(true, ['message' => "Your domain activate succesfully."]);
+        }
+
+        return $this->res(false, ['message' => "Somthing wrong!"]);
+    }
+
+    protected function getDomainOfCurrentUser(Domain $domain, $input)
+    {
+        return $domain->where([
+            ['user_id', '=', 1]/* auth()->id() */,
+            ['domain', $input]
+        ])->get();
+    }
+
+    protected function activateDomain(Domain $domain, $input)
+    {
+        return $domain
+            ->where([
+                ['user_id', '=', 1]/* auth()->id() */,
+                ['domain', $input]
+            ])
+            ->update(['activation_status' => true]);
+    }
+
+    protected function confirmDomain($requestedDomain)
+    {
+        try {
+            $item = $requestedDomain->first()->toArray();
+            $result = file_get_contents($item['domain'] . '/' . 'arvancloud-' . $item['activation_token'] . '.txt');
+            if (trim($result) === $item['activation_token']) {
+                return true;
+            }
+            return false;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *

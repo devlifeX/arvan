@@ -8,14 +8,8 @@ class Domain extends Model
 {
     protected $guarded = [];
 
-    protected $hidden = [
-        'activation_token',
-    ];
-
     public function users()
     {
         $this->hasOne(User::class);
     }
-
-
 }
