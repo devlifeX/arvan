@@ -24,3 +24,4 @@ Route::get('/add', 'HomeController@add')->name('add');
 // Route::get('/domain', 'DomainController@index');
 Route::post('/domain/create', 'DomainController@create');
 Route::post('/domain/confirm', 'DomainController@confirm');
+Route::get('/domain/show', 'DomainController@show');

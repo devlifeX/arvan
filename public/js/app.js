@@ -2018,16 +2018,67 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  methods: {},
+  methods: {
+    fetchAll: function fetchAll() {
+      var _this = this;
+
+      Object(_api_js__WEBPACK_IMPORTED_MODULE_0__["getData"])("".concat(this.baseUrl, "/domain/show")).then(function (data) {
+        if (data.success) {
+          _this.domains = data.domains;
+
+          if (data.domains.length <= 0) {
+            _this.message.has = true;
+          }
+        } else {
+          _this.message.type = "danger";
+          _this.message.text = "Somethings went wrong!";
+          _this.message.has = true;
+        }
+      });
+    }
+  },
+  mounted: function mounted() {
+    this.baseUrl = "".concat(window.location.origin);
+    this.fetchAll();
+  },
   data: function data() {
     return {
-      domains: []
+      domains: [],
+      baseUrl: "",
+      message: {
+        has: false,
+        type: "info",
+        text: "There is no domain, add new one!"
+      }
     };
-  },
-  created: function created() {
-    this.baseUrl = "".concat(window.location.origin);
   }
 });
 
@@ -38964,15 +39015,55 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "container" }, [
+    _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-8" }, [
+        _vm.message.has
+          ? _c("div", [
+              _c("div", { class: "alert alert-" + _vm.message.type }, [
+                _vm._v(_vm._s(_vm.message.text))
+              ])
+            ])
+          : _vm._e(),
+        _vm._v(" "),
+        _c("table", { staticClass: "table table-striped table-hover" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.domains, function(domain, name, index) {
+              return _c("tr", { key: index }, [
+                _c("th", [_vm._v(_vm._s(domain.id))]),
+                _vm._v(" "),
+                _c("th", [_vm._v(_vm._s(domain.user_id))]),
+                _vm._v(" "),
+                _c("th", [_vm._v(_vm._s(domain.domain))]),
+                _vm._v(" "),
+                _c("th", [_vm._v(_vm._s(domain.activation_status))])
+              ])
+            }),
+            0
+          )
+        ])
+      ])
+    ])
+  ])
 }
 var staticRenderFns = [
   function() {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row" }, [_vm._v("all domains")])
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("domain id")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("domain owner")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("domain name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("domain activation status")])
+      ])
     ])
   }
 ]
@@ -51226,12 +51317,13 @@ var serverBus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 /*!*****************************!*\
   !*** ./resources/js/api.js ***!
   \*****************************/
-/*! exports provided: fetchData */
+/*! exports provided: fetchData, getData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchData", function() { return fetchData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getData", function() { return getData; });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -51273,19 +51365,18 @@ function _fetchData() {
             body = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
             args = prepareApi();
             args.body = JSON.stringify(body);
-            console.log(args);
-            _context.next = 6;
+            _context.next = 5;
             return fetch(url, args);
 
-          case 6:
+          case 5:
             response = _context.sent;
-            _context.next = 9;
+            _context.next = 8;
             return response.json();
 
-          case 9:
+          case 8:
             return _context.abrupt("return", _context.sent);
 
-          case 10:
+          case 9:
           case "end":
             return _context.stop();
         }
@@ -51293,6 +51384,42 @@ function _fetchData() {
     }, _callee);
   }));
   return _fetchData.apply(this, arguments);
+}
+
+function getData(_x2) {
+  return _getData.apply(this, arguments);
+}
+
+function _getData() {
+  _getData = _asyncToGenerator(
+  /*#__PURE__*/
+  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee2(url) {
+    var args, response;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            args = prepareApi();
+            args.method = "get";
+            _context2.next = 4;
+            return fetch(url, args);
+
+          case 4:
+            response = _context2.sent;
+            _context2.next = 7;
+            return response.json();
+
+          case 7:
+            return _context2.abrupt("return", _context2.sent);
+
+          case 8:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+  return _getData.apply(this, arguments);
 }
 
 

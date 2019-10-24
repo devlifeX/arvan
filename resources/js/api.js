@@ -18,10 +18,15 @@ const prepareApi = () => {
 async function fetchData(url, body = {}) {
     let args = prepareApi();
     args.body = JSON.stringify(body);
-    console.log(args);
-
     let response = await fetch(url, args);
     return await response.json();
 }
 
-export { fetchData };
+async function getData(url) {
+    let args = prepareApi();
+    args.method = "get";
+    let response = await fetch(url, args);
+    return await response.json();
+}
+
+export { fetchData, getData };

@@ -112,17 +112,6 @@ class DomainController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  \App\Domain  $domain
@@ -130,40 +119,15 @@ class DomainController extends Controller
      */
     public function show(Domain $domain)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Domain  $domain
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Domain $domain)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Domain  $domain
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Domain $domain)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Domain  $domain
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Domain $domain)
-    {
-        //
+        $domains = $domain->where('user_id', 1)->get();
+        $newDomains =  $domains->map(function ($domain) {
+            return [
+                'id' => $domain['id'], //auth()->id(),
+                'user_id' => $domain['user_id'], //auth()->id(),
+                'domain' => $domain['domain'],
+                'activation_status' => $domain['activation_status'],
+            ];
+        });
+        return $this->res(true, ['domains' => $newDomains]);
     }
 }
