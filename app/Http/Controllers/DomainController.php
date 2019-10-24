@@ -47,7 +47,13 @@ class DomainController extends Controller
                 'activation_type' => 'file',
             ], $validated);
             $domain->create($args);
-            return $this->res(true, ['message' => 'Your Domain added succesfully.']);
+            return $this->res(
+                true,
+                [
+                    'message' => 'Your Domain added succesfully.',
+                    'token' => $args['activation_token']
+                ]
+            );
         } catch (\Throwable $th) {
             return $this->res(false, ['message' => 'Add domain failed!']);
         }
