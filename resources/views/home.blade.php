@@ -4,7 +4,8 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            All Doamin
+            <h2>All Doamins</h2>
+            <show-domains></show-domains>
         </div>
          <div class="col-md-4">
             <a href="/add">Add new Domain</a>
