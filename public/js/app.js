@@ -1898,6 +1898,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -1947,6 +1951,25 @@ __webpack_require__.r(__webpack_exports__);
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
+    },
+    confirmDomain: function confirmDomain() {
+      _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit("confirm-domain-clicked");
+    },
+    confirmDomainHandler: function confirmDomainHandler(e) {
+      e.loading = true;
+      Object(_api_js__WEBPACK_IMPORTED_MODULE_1__["fetchData"])("".concat(e.baseUrl, "/domain/confirm"), {
+        domain: e.domain
+      }).then(function (data) {
+        console.log(data);
+
+        if (data.success) {
+          e.step = 2;
+        } else {
+          alert(data.message);
+        }
+
+        e.loading = false;
+      });
     }
   },
   data: function data() {
@@ -1967,6 +1990,9 @@ __webpack_require__.r(__webpack_exports__);
     });
     _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on("download-link-clicked", function () {
       _this.downloadLinkHandler(_this);
+    });
+    _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on("confirm-domain-clicked", function () {
+      _this.confirmDomainHandler(_this);
     });
   },
   components: {
@@ -6481,7 +6507,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".step1,\n.step2 {\n  position: relative;\n}\n.step2 {\n  margin-top: 50px;\n}\n.step1-disabled {\n  background-color: #333;\n  width: 100%;\n  height: 100%;\n  position: absolute;\n  opacity: 0.2;\n  z-index: 2;\n}", ""]);
+exports.push([module.i, ".step1,\n.step2,\n.step3 {\n  margin-top: 50px;\n  position: relative;\n}", ""]);
 
 // exports
 
@@ -38763,72 +38789,72 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-md-8 step1" }, [
-        _vm.step != 0 ? _c("div", { staticClass: "step1-disabled" }) : _vm._e(),
-        _vm._v(" "),
-        _c("form", [
-          _c("div", { staticClass: "form-group" }, [
-            _c("label", { attrs: { for: "exampleFormControlInput1" } }, [
-              _vm._v("Domain URL")
-            ]),
-            _vm._v(" "),
-            _c(
-              "small",
-              {
-                staticClass: "text-muted",
-                attrs: { id: "passwordHelpInline" }
-              },
-              [_vm._v("Please enter you domain to continue")]
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.domain,
-                  expression: "domain"
-                }
-              ],
-              staticClass: "form-control",
-              attrs: {
-                type: "url",
-                id: "domain",
-                placeholder: "yourdomain.com"
-              },
-              domProps: { value: _vm.domain },
-              on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.domain = $event.target.value
-                }
-              }
-            })
-          ]),
-          _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "form-group" },
-            [
-              _c(
-                "VueLoadingButton",
-                {
-                  attrs: { loading: _vm.loading },
-                  nativeOn: {
-                    click: function($event) {
-                      return _vm.addDomainClicked($event)
+      _vm.step == 0
+        ? _c("div", { staticClass: "col-md-8 step1" }, [
+            _c("form", [
+              _c("div", { staticClass: "form-group" }, [
+                _c("label", { attrs: { for: "exampleFormControlInput1" } }, [
+                  _vm._v("Domain URL")
+                ]),
+                _vm._v(" "),
+                _c(
+                  "small",
+                  {
+                    staticClass: "text-muted",
+                    attrs: { id: "passwordHelpInline" }
+                  },
+                  [_vm._v("Please enter you domain to continue")]
+                ),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.domain,
+                      expression: "domain"
+                    }
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    type: "url",
+                    id: "domain",
+                    placeholder: "yourdomain.com"
+                  },
+                  domProps: { value: _vm.domain },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.domain = $event.target.value
                     }
                   }
-                },
-                [_vm._v("Add domain")]
+                })
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "form-group" },
+                [
+                  _c(
+                    "VueLoadingButton",
+                    {
+                      attrs: { loading: _vm.loading },
+                      nativeOn: {
+                        click: function($event) {
+                          return _vm.addDomainClicked($event)
+                        }
+                      }
+                    },
+                    [_vm._v("Add domain")]
+                  )
+                ],
+                1
               )
-            ],
-            1
-          )
-        ])
-      ]),
+            ])
+          ])
+        : _vm._e(),
       _vm._v(" "),
       _vm.step == 1
         ? _c("div", { staticClass: "col-md-8 step2" }, [
@@ -38871,6 +38897,14 @@ var render = function() {
                 ],
                 1
               )
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _vm.step == 2
+        ? _c("div", { staticClass: "col-md-8 step3" }, [
+            _c("div", { staticClass: "alert alert-success" }, [
+              _vm._v("Your Domain Activate successfully, Enjoy our services.")
             ])
           ])
         : _vm._e()

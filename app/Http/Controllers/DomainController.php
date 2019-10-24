@@ -73,10 +73,10 @@ class DomainController extends Controller
         $status = $this->confirmDomain($requestedDomain);
         if ($status) {
             $this->activateDomain($domain, $validated['domain']);
-            return $this->res(true, ['message' => "Your domain activate succesfully."]);
+            return $this->res(true, ['message' => "Your domain activate successfully."]);
         }
 
-        return $this->res(false, ['message' => "Somthing wrong!"]);
+        return $this->res(false, ['message' => "Something went wrong!"]);
     }
 
     protected function getDomainOfCurrentUser(Domain $domain, $input)

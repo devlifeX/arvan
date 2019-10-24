@@ -2,8 +2,7 @@
   <div class="container">
     <div class="row">
       <!-- Step 1 -->
-      <div class="col-md-8 step1">
-        <div v-if="step!=0" class="step1-disabled"></div>
+      <div class="col-md-8 step1" v-if="step==0">
         <form>
           <div class="form-group">
             <label for="exampleFormControlInput1">Domain URL</label>
@@ -38,6 +37,11 @@
             >Confirm Domain {{domain}}</VueLoadingButton>
           </div>
         </form>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="col-md-8 step3" v-if="step==2">
+        <div class="alert alert-success">Your Domain Activate successfully, Enjoy our services.</div>
       </div>
     </div>
   </div>
@@ -94,6 +98,23 @@ export default {
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
+    },
+    confirmDomain: () => {
+      serverBus.$emit("confirm-domain-clicked");
+    },
+    confirmDomainHandler: e => {
+      e.loading = true;
+      fetchData(`${e.baseUrl}/domain/confirm`, { domain: e.domain }).then(
+        data => {
+          console.log(data);
+          if (data.success) {
+            e.step = 2;
+          } else {
+            alert(data.message);
+          }
+          e.loading = false;
+        }
+      );
     }
   },
   data() {
@@ -113,6 +134,9 @@ export default {
     serverBus.$on("download-link-clicked", () => {
       this.downloadLinkHandler(this);
     });
+    serverBus.$on("confirm-domain-clicked", () => {
+      this.confirmDomainHandler(this);
+    });
   },
   components: {
     VueLoadingButton
@@ -123,18 +147,9 @@ export default {
 
 <style lang="scss">
 .step1,
-.step2 {
-  position: relative;
-}
-.step2 {
+.step2,
+.step3 {
   margin-top: 50px;
-}
-.step1-disabled {
-  background-color: #333;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  opacity: 0.2;
-  z-index: 2;
+  position: relative;
 }
 </style>
