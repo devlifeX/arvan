@@ -8,7 +8,7 @@
             <show-domains></show-domains>
         </div>
          <div class="col-md-4">
-            <a href="/add">Add new Domain</a>
+             <a href="{{url('add')}}">Add new Domain</a>
         </div>
     </div>
 </div>
