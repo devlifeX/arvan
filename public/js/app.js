@@ -2044,6 +2044,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
@@ -39035,11 +39036,13 @@ var render = function() {
               return _c("tr", { key: index }, [
                 _c("th", [_vm._v(_vm._s(domain.id))]),
                 _vm._v(" "),
-                _c("th", [_vm._v(_vm._s(domain.user_id))]),
-                _vm._v(" "),
                 _c("th", [_vm._v(_vm._s(domain.domain))]),
                 _vm._v(" "),
-                _c("th", [_vm._v(_vm._s(domain.activation_status))])
+                _c("th", [
+                  domain.activation_status == 1
+                    ? _c("i", { staticClass: "fa fa-check green" })
+                    : _c("i", { staticClass: "fa fa-close red" })
+                ])
               ])
             }),
             0
@@ -39057,8 +39060,6 @@ var staticRenderFns = [
     return _c("thead", [
       _c("tr", [
         _c("th", [_vm._v("domain id")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("domain owner")]),
         _vm._v(" "),
         _c("th", [_vm._v("domain name")]),
         _vm._v(" "),

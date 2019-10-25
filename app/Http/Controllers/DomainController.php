@@ -14,17 +14,7 @@ class DomainController extends Controller
 
     public function __construct()
     {
-        // $this->middleware('auth');
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
+        $this->middleware('auth');
     }
 
     /**
@@ -40,7 +30,7 @@ class DomainController extends Controller
             ]);
 
             $args = array_merge([
-                'user_id' => 1, //auth()->id(),
+                'user_id' => auth()->id(),
                 'domain' => $validated['domain'],
                 'activation_token' => Str::random(60),
                 'activation_status' => '0',
@@ -82,7 +72,7 @@ class DomainController extends Controller
     protected function getDomainOfCurrentUser(Domain $domain, $input)
     {
         return $domain->where([
-            ['user_id', '=', 1]/* auth()->id() */,
+            ['user_id', '=',  auth()->id()],
             ['domain', $input]
         ])->get();
     }
@@ -91,7 +81,7 @@ class DomainController extends Controller
     {
         return $domain
             ->where([
-                ['user_id', '=', 1]/* auth()->id() */,
+                ['user_id', '=', auth()->id()],
                 ['domain', $input]
             ])
             ->update(['activation_status' => true]);
@@ -119,11 +109,11 @@ class DomainController extends Controller
      */
     public function show(Domain $domain)
     {
-        $domains = $domain->where('user_id', 1)->get();
+        $domains = $domain->where('user_id', '=', auth()->id())->get();
         $newDomains =  $domains->map(function ($domain) {
             return [
-                'id' => $domain['id'], //auth()->id(),
-                'user_id' => $domain['user_id'], //auth()->id(),
+                'id' => $domain['id'],
+                'user_id' => $domain['user_id'],
                 'domain' => $domain['domain'],
                 'activation_status' => $domain['activation_status'],
             ];

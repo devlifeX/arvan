@@ -11,7 +11,6 @@
           <thead>
             <tr>
               <th>domain id</th>
-              <th>domain owner</th>
               <th>domain name</th>
               <th>domain activation status</th>
             </tr>
@@ -19,9 +18,11 @@
           <tbody>
             <tr v-for="(domain, name, index) in domains" :key="index">
               <th>{{domain.id}}</th>
-              <th>{{domain.user_id}}</th>
               <th>{{domain.domain}}</th>
-              <th>{{domain.activation_status}}</th>
+              <th>
+                <i v-if="domain.activation_status==1" class="fa fa-check green"></i>
+                <i v-else class="fa fa-close red"></i>
+              </th>
             </tr>
           </tbody>
         </table>
