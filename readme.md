@@ -9,6 +9,7 @@
 2) Vue.js 2 as Front-end 
 3) Use CSRF Token Insted of Bearer Toekn  
 4) Use Trait Response Handler   
+5) Write tiny UnitTest
 
 
 How to Use?
