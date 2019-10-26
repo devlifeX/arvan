@@ -18,7 +18,7 @@ How to Use?
 ```bash
 $ git clone https://github.com/devlifeX/arvan.git
 ```
-2) Use this .env file
+3) Use this .env file
 ```plain
 APP_NAME=Laravel
 APP_ENV=local
@@ -40,4 +40,8 @@ DB_PASSWORD=root
 $ cd arvan
 $ composer install
 $ docker-compose up -d
+$ cp .env.example .env
+$ vim .env # update with below content
+$ php artisan key:generate
+$ php artisan migrate
 ```
