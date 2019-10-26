@@ -2,7 +2,13 @@
 
 
 ## About This project
-<p>Confirm DNS Owner</p>
+ Confirm DNS Owner
+
+0) Laravel 6 As Back-end  
+1) Vue.js 2 as Front-end 
+3) Use CSRF Token Insted of Bearer Toekn  
+4) Use Trait Response Handler   
+
 
 How to Use?
 ========
