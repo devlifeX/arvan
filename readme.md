@@ -46,3 +46,8 @@ $ vim .env # update with below content
 $ php artisan key:generate
 $ php artisan migrate
 ```
+### UnitTest
+
+```bash
+$ vendor/bin/phpunit
+```
