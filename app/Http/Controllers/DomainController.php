@@ -67,7 +67,7 @@ class DomainController extends Controller
 
         $status = $this->confirmDomain($requestedDomain);
         if ($status) {
-            $this->activateDomain($domain, $validated['domain']);
+            $this->activateDomain($domain, $url);
             return $this->res(true, ['message' => "Your domain activate successfully."]);
         }
 
