@@ -39025,29 +39025,27 @@ var render = function() {
                 _vm._v(_vm._s(_vm.message.text))
               ])
             ])
-          : _vm._e(),
-        _vm._v(" "),
-        _c("table", { staticClass: "table table-striped table-hover" }, [
-          _vm._m(0),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            _vm._l(_vm.domains, function(domain, name, index) {
-              return _c("tr", { key: index }, [
-                _c("th", [_vm._v(_vm._s(domain.id))]),
-                _vm._v(" "),
-                _c("th", [_vm._v(_vm._s(domain.domain))]),
-                _vm._v(" "),
-                _c("th", [
-                  domain.activation_status == 1
-                    ? _c("i", { staticClass: "fa fa-check green" })
-                    : _c("i", { staticClass: "fa fa-close red" })
-                ])
-              ])
-            }),
-            0
-          )
-        ])
+          : _c("table", { staticClass: "table table-striped table-hover" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c(
+                "tbody",
+                _vm._l(_vm.domains, function(domain, name, index) {
+                  return _c("tr", { key: index }, [
+                    _c("th", [_vm._v(_vm._s(domain.id))]),
+                    _vm._v(" "),
+                    _c("th", [_vm._v(_vm._s(domain.domain))]),
+                    _vm._v(" "),
+                    _c("th", [
+                      domain.activation_status == 1
+                        ? _c("i", { staticClass: "fa fa-check green" })
+                        : _c("i", { staticClass: "fa fa-close red" })
+                    ])
+                  ])
+                }),
+                0
+              )
+            ])
       ])
     ])
   ])

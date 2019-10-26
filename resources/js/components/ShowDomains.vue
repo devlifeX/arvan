@@ -7,7 +7,7 @@
           <div :class="'alert alert-' + message.type">{{message.text}}</div>
         </div>
         <!-- table -->
-        <table class="table table-striped table-hover">
+        <table v-else class="table table-striped table-hover">
           <thead>
             <tr>
               <th>domain id</th>

@@ -6,7 +6,7 @@ use App\Domain;
 use App\Traits\ResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use App\MyUtil\MyHelper;
 
 class DomainController extends Controller
 {
@@ -29,13 +29,15 @@ class DomainController extends Controller
                 'domain' => 'url',
             ]);
 
-            $args = array_merge([
+            $url = MyHelper::urlSanitize($validated['domain']);
+
+            $args = [
                 'user_id' => auth()->id(),
-                'domain' => $validated['domain'],
+                'domain' => $url,
                 'activation_token' => Str::random(60),
                 'activation_status' => '0',
                 'activation_type' => 'file',
-            ], $validated);
+            ];
             $domain->create($args);
             return $this->res(
                 true,
@@ -55,7 +57,10 @@ class DomainController extends Controller
             'domain' => 'url',
         ]);
 
-        $requestedDomain = $this->getDomainOfCurrentUser($domain, $validated['domain']);
+        $url = MyHelper::urlSanitize($validated['domain']);
+
+        $requestedDomain = $this->getDomainOfCurrentUser($domain, $url);
+
         if ($requestedDomain->isEmpty()) {
             return $this->res(false, ['message' => "Bad domain!"]);
         }
