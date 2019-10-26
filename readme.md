@@ -38,5 +38,6 @@ DB_PASSWORD=root
 
 ```bash
 $ cd arvan
+$ composer install
 $ docker-compose up -d
 ```
