@@ -7,6 +7,7 @@
           <div class="form-group">
             <label for="exampleFormControlInput1">Domain URL</label>
             <small id="passwordHelpInline" class="text-muted">Please enter you domain to continue</small>
+
             <input
               v-model="domain"
               type="url"
@@ -14,6 +15,13 @@
               id="domain"
               placeholder="yourdomain.com"
             />
+          </div>
+          <div class="form-group">
+            <label for>Domain Activation Type</label>
+            <select v-model="type">
+              <option value="dns">DNS Activation</option>
+              <option value="file">File Activation</option>
+            </select>
           </div>
           <div class="form-group">
             <VueLoadingButton :loading="loading" @click.native="addDomainClicked">Add domain</VueLoadingButton>
@@ -26,11 +34,15 @@
         <div v-if="step!=1" class="step2-disabled"></div>
         <form>
           <div class="form-group">
-            <p>
+            <div v-if="type==='dns'">
+              Please create TXT record and put below content in there.
+              <div class="alert alert-info long-text">arvancloud-{{token}}</div>
+            </div>
+            <div v-if="type==='file'">
               Please download
               <a href="#download" @click="downloadLinkClick">this</a>
               file and put it in your site root (public_html)
-            </p>
+            </div>
             <VueLoadingButton
               :loading="loading"
               @click.native="confirmDomain"
@@ -71,18 +83,18 @@ export default {
         return;
       }
       e.loading = true;
-      fetchData(`${e.baseUrl}/domain/create`, { domain: e.domain }).then(
-        data => {
-          console.log(data);
-          if (data.success) {
-            e.step = 1;
-            e.token = data.token;
-          } else {
-            alert(data.message);
-          }
-          e.loading = false;
+      fetchData(`${e.baseUrl}/domain/create`, {
+        domain: e.domain,
+        type: e.type
+      }).then(data => {
+        if (data.success) {
+          e.step = 1;
+          e.token = data.token;
+        } else {
+          alert(data.message);
         }
-      );
+        e.loading = false;
+      });
     },
     downloadLinkClick: () => {
       serverBus.$emit("download-link-clicked");
@@ -120,6 +132,7 @@ export default {
   data() {
     return {
       domain: "",
+      type: "dns",
       loading: false,
       baseUrl: "",
       step: 0,
@@ -151,5 +164,9 @@ export default {
 .step3 {
   margin-top: 50px;
   position: relative;
+}
+.long-text {
+  overflow-x: scroll;
+  white-space: nowrap;
 }
 </style>

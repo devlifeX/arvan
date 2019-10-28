@@ -1902,6 +1902,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1926,10 +1938,9 @@ __webpack_require__.r(__webpack_exports__);
 
       e.loading = true;
       Object(_api_js__WEBPACK_IMPORTED_MODULE_1__["fetchData"])("".concat(e.baseUrl, "/domain/create"), {
-        domain: e.domain
+        domain: e.domain,
+        type: e.type
       }).then(function (data) {
-        console.log(data);
-
         if (data.success) {
           e.step = 1;
           e.token = data.token;
@@ -1975,6 +1986,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       domain: "",
+      type: "dns",
       loading: false,
       baseUrl: "",
       step: 0,
@@ -6590,7 +6602,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".step1,\n.step2,\n.step3 {\n  margin-top: 50px;\n  position: relative;\n}", ""]);
+exports.push([module.i, ".step1,\n.step2,\n.step3 {\n  margin-top: 50px;\n  position: relative;\n}\n.long-text {\n  overflow-x: scroll;\n  white-space: nowrap;\n}", ""]);
 
 // exports
 
@@ -38916,6 +38928,50 @@ var render = function() {
                 })
               ]),
               _vm._v(" "),
+              _c("div", { staticClass: "form-group" }, [
+                _c("label", { attrs: { for: "" } }, [
+                  _vm._v("Domain Activation Type")
+                ]),
+                _vm._v(" "),
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.type,
+                        expression: "type"
+                      }
+                    ],
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.type = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      }
+                    }
+                  },
+                  [
+                    _c("option", { attrs: { value: "dns" } }, [
+                      _vm._v("DNS Activation")
+                    ]),
+                    _vm._v(" "),
+                    _c("option", { attrs: { value: "file" } }, [
+                      _vm._v("File Activation")
+                    ])
+                  ]
+                )
+              ]),
+              _vm._v(" "),
               _c(
                 "div",
                 { staticClass: "form-group" },
@@ -38950,20 +39006,35 @@ var render = function() {
                 "div",
                 { staticClass: "form-group" },
                 [
-                  _c("p", [
-                    _vm._v("\n            Please download\n            "),
-                    _c(
-                      "a",
-                      {
-                        attrs: { href: "#download" },
-                        on: { click: _vm.downloadLinkClick }
-                      },
-                      [_vm._v("this")]
-                    ),
-                    _vm._v(
-                      "\n            file and put it in your site root (public_html)\n          "
-                    )
-                  ]),
+                  _vm.type === "dns"
+                    ? _c("div", [
+                        _vm._v(
+                          "\n            Please create TXT record and put below content in there.\n            "
+                        ),
+                        _c(
+                          "div",
+                          { staticClass: "alert alert-info long-text" },
+                          [_vm._v("arvancloud-" + _vm._s(_vm.token))]
+                        )
+                      ])
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.type === "file"
+                    ? _c("div", [
+                        _vm._v("\n            Please download\n            "),
+                        _c(
+                          "a",
+                          {
+                            attrs: { href: "#download" },
+                            on: { click: _vm.downloadLinkClick }
+                          },
+                          [_vm._v("this")]
+                        ),
+                        _vm._v(
+                          "\n            file and put it in your site root (public_html)\n          "
+                        )
+                      ])
+                    : _vm._e(),
                   _vm._v(" "),
                   _c(
                     "VueLoadingButton",

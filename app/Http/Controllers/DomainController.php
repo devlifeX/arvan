@@ -20,6 +20,17 @@ class DomainController extends Controller
         $this->middleware('auth');
     }
 
+    private function activationTypesCheck($type)
+    {
+        $types = [
+            'dns',
+            'file'
+        ];
+        if (in_array($type, $types)) {
+            return $type;
+        }
+        return 'dns';
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -29,17 +40,19 @@ class DomainController extends Controller
     {
         try {
             $validated = $req->validate([
-                'domain' => 'url',
+                'domain' => 'required|url',
+                'type' =>  'string|min:3'
             ]);
 
             $url = MyHelper::urlSanitize($validated['domain']);
+            $activation_type = $this->activationTypesCheck($validated['type']);
 
             $args = [
                 'user_id' => auth()->id(),
                 'domain' => $url,
                 'activation_token' => Str::random(60),
                 'activation_status' => '0',
-                'activation_type' => 'dns',
+                'activation_type' => $activation_type,
             ];
             $domain->create($args);
             return $this->res(
