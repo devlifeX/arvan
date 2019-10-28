@@ -13,6 +13,7 @@
               <th>domain id</th>
               <th>domain name</th>
               <th>domain activation status</th>
+              <th>Activation</th>
               <th>operation</th>
             </tr>
           </thead>
@@ -23,6 +24,17 @@
               <th>
                 <i v-if="domain.activation_status==1" class="fa fa-check green"></i>
                 <i v-else class="fa fa-close red"></i>
+              </th>
+              <th>
+                <a
+                  v-if="domain.activation_type === 'file'"
+                  href="#download"
+                  @click="downloadLinkHandler(domain.activation_token)"
+                >Download File</a>
+                <div
+                  v-if="domain.activation_type === 'dns'"
+                  class="long-text"
+                >arvancloud-{{domain.activation_token}}</div>
               </th>
               <th>
                 <button title="remove?" @click="remove(domain.id)">
@@ -42,6 +54,18 @@ import { getData, deleteData } from "../api.js";
 
 export default {
   methods: {
+    downloadLinkHandler(token) {
+      let element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(token)
+      );
+      element.setAttribute("download", `arvancloud-${token}.txt`);
+      element.style.display = "none";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    },
     fetchAll() {
       getData(`${this.baseUrl}/domain/show`).then(data => {
         if (data.success) {
@@ -89,3 +113,9 @@ export default {
 </script>
 
 
+<style lang="scss">
+.long-text {
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+</style>

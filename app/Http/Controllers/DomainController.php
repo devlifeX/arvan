@@ -163,6 +163,8 @@ class DomainController extends Controller
                 'id' => $domain['id'],
                 'user_id' => $domain['user_id'],
                 'domain' => $domain['domain'],
+                'activation_token' => $domain['activation_token'],
+                'activation_type' => $domain['activation_type'],
                 'activation_status' => $domain['activation_status'],
             ];
         });
