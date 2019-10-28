@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\MyUtil\MyHelper;
 use Spatie\Dns\Dns;
+use Log;
 
 class DomainController extends Controller
 {
@@ -49,6 +50,7 @@ class DomainController extends Controller
                 ]
             );
         } catch (\Throwable $th) {
+            Log::debug($th);
             return $this->res(false, ['message' => 'Add domain failed!']);
         }
     }
@@ -117,6 +119,7 @@ class DomainController extends Controller
             }
             return false;
         } catch (\Throwable $th) {
+            Log::debug($th);
             return false;
         }
     }
@@ -126,10 +129,9 @@ class DomainController extends Controller
         try {
             $item = $requestedDomain->first()->toArray();
             $txtRecords  = $this->dnsTxtRecords($item['domain']);
-            $result = $this->dnsHasToken($txtRecords, $item['activation_token']);
-            dd($result);
-            exit;
+            return $this->dnsHasToken($txtRecords, $item['activation_token']);
         } catch (\Throwable $th) {
+            Log::debug($th);
             return false;
         }
     }
@@ -157,7 +159,10 @@ class DomainController extends Controller
     protected function dnsTxtRecords($url)
     {
         try {
-            $dns = new Dns($url);
+            $prepareUrl = function ($url) {
+                return str_replace('www.', '', parse_url(strtolower($url))['host']);;
+            };
+            $dns = new Dns($prepareUrl($url));
             $result  = $dns->getRecords('TXT');
             if (!$result)  return [];
             return
@@ -167,6 +172,7 @@ class DomainController extends Controller
                 })
                 ->toArray();
         } catch (\Throwable $th) {
+            Log::debug($th);
             return [];
         }
     }
@@ -181,7 +187,7 @@ class DomainController extends Controller
                 })
                 ->some(true);
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            Log::debug($th);
             return false;
         }
     }
