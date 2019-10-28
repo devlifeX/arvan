@@ -84,7 +84,7 @@ export default {
       deleteData(`${this.baseUrl}/domain/delete/${id}`, { id }).then(data => {
         if (data.success) {
           this.domains = this.domains.filter(d => {
-            return d.id === id;
+            return d.id !== id;
           });
         } else {
           this.message.type = "danger";

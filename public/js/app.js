@@ -2112,7 +2112,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (data) {
         if (data.success) {
           _this2.domains = _this2.domains.filter(function (d) {
-            return d.id === id;
+            return d.id !== id;
           });
         } else {
           _this2.message.type = "danger";
