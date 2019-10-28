@@ -9,10 +9,10 @@ use Illuminate\Support\Str;
 use App\MyUtil\MyHelper;
 use Spatie\Dns\Dns;
 
-
 class DomainController extends Controller
 {
     use ResponseHandler;
+    protected $prefixActivation = 'arvancloud-';
 
     public function __construct()
     {
@@ -33,20 +33,12 @@ class DomainController extends Controller
 
             $url = MyHelper::urlSanitize($validated['domain']);
 
-            // $result = dns_get_record('chetor.com', DNS_ANY);
-            $dns = new Dns('devlife.ir');
-
-            $result = $dns->getRecords(); // returns all records
-
-            print_r($result);
-            exit;
-
             $args = [
                 'user_id' => auth()->id(),
                 'domain' => $url,
                 'activation_token' => Str::random(60),
                 'activation_status' => '0',
-                'activation_type' => 'file',
+                'activation_type' => 'dns',
             ];
             $domain->create($args);
             return $this->res(
@@ -57,8 +49,6 @@ class DomainController extends Controller
                 ]
             );
         } catch (\Throwable $th) {
-            print_r($th->getMessage());
-            exit;
             return $this->res(false, ['message' => 'Add domain failed!']);
         }
     }
@@ -77,13 +67,26 @@ class DomainController extends Controller
             return $this->res(false, ['message' => "Bad domain!"]);
         }
 
-        $status = $this->confirmDomain($requestedDomain);
+        $status = false;
+
+        $type = $this->getTypeOfActivation($requestedDomain);
+        if ($type === 'file') {
+            $status = $this->confirmDomainByFile($requestedDomain);
+        } else if ($type === 'dns') {
+            $status = $this->confirmDomainByDns($requestedDomain);
+        }
+
         if ($status) {
             $this->activateDomain($domain, $url);
             return $this->res(true, ['message' => "Your domain activate successfully."]);
         }
 
         return $this->res(false, ['message' => "Something went wrong!"]);
+    }
+
+    protected function getTypeOfActivation($requestedDomain)
+    {
+        return $requestedDomain->first()->value('activation_type');
     }
 
     protected function getDomainOfCurrentUser(Domain $domain, $input)
@@ -104,15 +107,28 @@ class DomainController extends Controller
             ->update(['activation_status' => true]);
     }
 
-    protected function confirmDomain($requestedDomain)
+    protected function confirmDomainByFile($requestedDomain)
     {
         try {
             $item = $requestedDomain->first()->toArray();
-            $result = file_get_contents($item['domain'] . '/' . 'arvancloud-' . $item['activation_token'] . '.txt');
+            $result = file_get_contents($item['domain'] . '/' . $this->prefixActivation . $item['activation_token'] . '.txt');
             if (trim($result) === $item['activation_token']) {
                 return true;
             }
             return false;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
+
+    protected function confirmDomainByDns($requestedDomain)
+    {
+        try {
+            $item = $requestedDomain->first()->toArray();
+            $txtRecords  = $this->dnsTxtRecords($item['domain']);
+            $result = $this->dnsHasToken($txtRecords, $item['activation_token']);
+            dd($result);
+            exit;
         } catch (\Throwable $th) {
             return false;
         }
@@ -136,5 +152,37 @@ class DomainController extends Controller
             ];
         });
         return $this->res(true, ['domains' => $newDomains]);
+    }
+
+    protected function dnsTxtRecords($url)
+    {
+        try {
+            $dns = new Dns($url);
+            $result  = $dns->getRecords('TXT');
+            if (!$result)  return [];
+            return
+                collect(explode("\n", $result))
+                ->filter(function ($item) {
+                    return !empty($item);
+                })
+                ->toArray();
+        } catch (\Throwable $th) {
+            return [];
+        }
+    }
+
+    protected function dnsHasToken($txtRecords, $token)
+    {
+        try {
+            if (!$txtRecords) return false;
+            return collect($txtRecords)
+                ->map(function ($item) use ($token) {
+                    return strpos($item, $this->prefixActivation . $token) !== false;
+                })
+                ->some(true);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            return false;
+        }
     }
 }
