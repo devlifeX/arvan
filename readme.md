@@ -2,7 +2,7 @@
 
 
 ## About This project
- Confirm DNS Owner
+ Confirm DNS Owner By Two methods (DNS Activation & File Activation)
  
 0) Docker as development enviroment 
 1) Laravel 6 as Back-end  
