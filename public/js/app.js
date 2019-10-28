@@ -2057,6 +2057,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
@@ -2074,6 +2080,23 @@ __webpack_require__.r(__webpack_exports__);
           _this.message.type = "danger";
           _this.message.text = "Somethings went wrong!";
           _this.message.has = true;
+        }
+      });
+    },
+    remove: function remove(id) {
+      var _this2 = this;
+
+      Object(_api_js__WEBPACK_IMPORTED_MODULE_0__["deleteData"])("".concat(this.baseUrl, "/domain/delete/").concat(id), {
+        id: id
+      }).then(function (data) {
+        if (data.success) {
+          _this2.domains = _this2.domains.filter(function (domain_id) {
+            return domain_id === id;
+          });
+        } else {
+          _this2.message.type = "danger";
+          _this2.message.text = "Somethings went wrong!";
+          _this2.message.has = true;
         }
       });
     }
@@ -39090,7 +39113,7 @@ var render = function() {
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row" }, [
       _c("div", { staticClass: "col-md-8" }, [
-        _vm.message.has
+        _vm.message.has || _vm.domains.length <= 0
           ? _c("div", [
               _c("div", { class: "alert alert-" + _vm.message.type }, [
                 _vm._v(_vm._s(_vm.message.text))
@@ -39111,6 +39134,21 @@ var render = function() {
                       domain.activation_status == 1
                         ? _c("i", { staticClass: "fa fa-check green" })
                         : _c("i", { staticClass: "fa fa-close red" })
+                    ]),
+                    _vm._v(" "),
+                    _c("th", [
+                      _c(
+                        "button",
+                        {
+                          attrs: { title: "remove?" },
+                          on: {
+                            click: function($event) {
+                              return _vm.remove(domain.id)
+                            }
+                          }
+                        },
+                        [_c("span", { staticClass: "fa fa-trash red" })]
+                      )
                     ])
                   ])
                 }),
@@ -39132,7 +39170,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("domain name")]),
         _vm._v(" "),
-        _c("th", [_vm._v("domain activation status")])
+        _c("th", [_vm._v("domain activation status")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("operation")])
       ])
     ])
   }
@@ -51387,13 +51427,14 @@ var serverBus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 /*!*****************************!*\
   !*** ./resources/js/api.js ***!
   \*****************************/
-/*! exports provided: fetchData, getData */
+/*! exports provided: fetchData, getData, deleteData */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "fetchData", function() { return fetchData; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getData", function() { return getData; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "deleteData", function() { return deleteData; });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -51490,6 +51531,43 @@ function _getData() {
     }, _callee2);
   }));
   return _getData.apply(this, arguments);
+}
+
+function deleteData(_x3, _x4) {
+  return _deleteData.apply(this, arguments);
+}
+
+function _deleteData() {
+  _deleteData = _asyncToGenerator(
+  /*#__PURE__*/
+  _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(url, body) {
+    var args, response;
+    return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            args = prepareApi();
+            args.method = "delete";
+            args.body = JSON.stringify(body);
+            _context3.next = 5;
+            return fetch(url, args);
+
+          case 5:
+            response = _context3.sent;
+            _context3.next = 8;
+            return response.json();
+
+          case 8:
+            return _context3.abrupt("return", _context3.sent);
+
+          case 9:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+  return _deleteData.apply(this, arguments);
 }
 
 

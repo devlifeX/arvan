@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-8">
         <!-- message -->
-        <div v-if="message.has">
+        <div v-if="message.has || domains.length <= 0">
           <div :class="'alert alert-' + message.type">{{message.text}}</div>
         </div>
         <!-- table -->
@@ -13,6 +13,7 @@
               <th>domain id</th>
               <th>domain name</th>
               <th>domain activation status</th>
+              <th>operation</th>
             </tr>
           </thead>
           <tbody>
@@ -23,6 +24,11 @@
                 <i v-if="domain.activation_status==1" class="fa fa-check green"></i>
                 <i v-else class="fa fa-close red"></i>
               </th>
+              <th>
+                <button title="remove?" @click="remove(domain.id)">
+                  <span class="fa fa-trash red"></span>
+                </button>
+              </th>
             </tr>
           </tbody>
         </table>
@@ -32,7 +38,7 @@
 </template>
 
 <script>
-import { getData } from "../api.js";
+import { getData, deleteData } from "../api.js";
 
 export default {
   methods: {
@@ -43,6 +49,19 @@ export default {
           if (data.domains.length <= 0) {
             this.message.has = true;
           }
+        } else {
+          this.message.type = "danger";
+          this.message.text = "Somethings went wrong!";
+          this.message.has = true;
+        }
+      });
+    },
+    remove(id) {
+      deleteData(`${this.baseUrl}/domain/delete/${id}`, { id }).then(data => {
+        if (data.success) {
+          this.domains = this.domains.filter(domain_id => {
+            return domain_id === id;
+          });
         } else {
           this.message.type = "danger";
           this.message.text = "Somethings went wrong!";

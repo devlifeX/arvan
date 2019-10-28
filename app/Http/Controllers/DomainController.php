@@ -215,4 +215,15 @@ class DomainController extends Controller
             return false;
         }
     }
+
+    public function delete(Domain $domain, $id)
+    {
+        $domain = $domain->findOrFail($id);
+        if ($domain->user_id === auth()->id()) {
+            $domain->delete();
+            return $this->res(true);
+        }
+
+        return $this->res(false);
+    }
 }
