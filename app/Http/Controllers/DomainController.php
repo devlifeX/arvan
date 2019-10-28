@@ -7,6 +7,8 @@ use App\Traits\ResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\MyUtil\MyHelper;
+use Spatie\Dns\Dns;
+
 
 class DomainController extends Controller
 {
@@ -31,6 +33,14 @@ class DomainController extends Controller
 
             $url = MyHelper::urlSanitize($validated['domain']);
 
+            // $result = dns_get_record('chetor.com', DNS_ANY);
+            $dns = new Dns('devlife.ir');
+
+            $result = $dns->getRecords(); // returns all records
+
+            print_r($result);
+            exit;
+
             $args = [
                 'user_id' => auth()->id(),
                 'domain' => $url,
@@ -47,6 +57,8 @@ class DomainController extends Controller
                 ]
             );
         } catch (\Throwable $th) {
+            print_r($th->getMessage());
+            exit;
             return $this->res(false, ['message' => 'Add domain failed!']);
         }
     }
