@@ -9,6 +9,7 @@
 2) Vue.js 2 as Front-end 
 3) Use CSRF Token Insted of Bearer Toekn  
 4) Use Trait Response Handler   
+5) Write tiny UnitTest
 
 
 How to Use?
@@ -18,7 +19,7 @@ How to Use?
 ```bash
 $ git clone https://github.com/devlifeX/arvan.git
 ```
-2) Use this .env file
+3) Use this .env file
 ```plain
 APP_NAME=Laravel
 APP_ENV=local
@@ -38,5 +39,15 @@ DB_PASSWORD=root
 
 ```bash
 $ cd arvan
+$ composer install
 $ docker-compose up -d
+$ cp .env.example .env
+$ vim .env # update with below content
+$ php artisan key:generate
+$ php artisan migrate
+```
+### UnitTest
+
+```bash
+$ vendor/bin/phpunit
 ```
