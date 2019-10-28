@@ -172,14 +172,25 @@ class DomainController extends Controller
     protected function dnsTxtRecords($url)
     {
         try {
-            $prepareUrl = function ($url) {
+            $getTXTRecord = function ($url) {
+                $dns = new Dns($url);
+                return $dns->getRecords('TXT');
+            };
+            $withOutWWW = function ($url) {
                 return str_replace('www.', '', parse_url(strtolower($url))['host']);;
             };
-            $dns = new Dns($prepareUrl($url));
-            $result  = $dns->getRecords('TXT');
-            if (!$result)  return [];
+            $spliter = function ($string) {
+                return explode("\n", $string);
+            };
+            $results =
+                [
+                    $spliter($getTXTRecord($url)), // with WWW
+                    $spliter($getTXTRecord($withOutWWW($url))) // without WWW
+                ];
+
             return
-                collect(explode("\n", $result))
+                collect($results)
+                ->flatten(1)
                 ->filter(function ($item) {
                     return !empty($item);
                 })
