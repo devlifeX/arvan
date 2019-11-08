@@ -2024,6 +2024,32 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api.js */ "./resources/js/api.js");
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2120,6 +2146,38 @@ __webpack_require__.r(__webpack_exports__);
           _this2.message.has = true;
         }
       });
+    },
+    confirm: function confirm(domain, id) {
+      var _this3 = this;
+
+      this.loading = id;
+      Object(_api_js__WEBPACK_IMPORTED_MODULE_0__["fetchData"])("".concat(this.baseUrl, "/domain/confirm"), {
+        domain: domain
+      }).then(function (data) {
+        if (data.success) {
+          var domains = [];
+          var changedDomain = {};
+          changedDomain = _this3.domains.filter(function (i) {
+            return i.id === id;
+          }).map(function (i) {
+            return _objectSpread({}, i, {
+              activation_status: 1
+            });
+          });
+          domains = _this3.domains.filter(function (i) {
+            return i.id !== id;
+          });
+          console.log("changedDomain", changedDomain);
+          console.log("domains", domains);
+          _this3.domains = [].concat(_toConsumableArray(domains), _toConsumableArray(changedDomain)).sort(function (a, b) {
+            return a.id - b.id;
+          });
+        } else {
+          alert(data.message);
+        }
+
+        _this3.loading = 0;
+      });
     }
   },
   mounted: function mounted() {
@@ -2130,6 +2188,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       domains: [],
       baseUrl: "",
+      loading: 0,
       message: {
         has: false,
         type: "info",
@@ -6665,7 +6724,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".long-text {\n  overflow-x: scroll;\n  white-space: nowrap;\n}", ""]);
+exports.push([module.i, ".long-text {\n  overflow-x: scroll;\n  white-space: nowrap;\n}\n.table td,\n.table th {\n  white-space: nowrap;\n  width: 1%;\n}\nbutton:disabled {\n  opacity: 0.3;\n}", ""]);
 
 // exports
 
@@ -39196,17 +39255,17 @@ var render = function() {
                 "tbody",
                 _vm._l(_vm.domains, function(domain, name, index) {
                   return _c("tr", { key: index }, [
-                    _c("th", [_vm._v(_vm._s(domain.id))]),
+                    _c("td", [_vm._v(_vm._s(domain.id))]),
                     _vm._v(" "),
-                    _c("th", [_vm._v(_vm._s(domain.domain))]),
+                    _c("td", [_vm._v(_vm._s(domain.domain))]),
                     _vm._v(" "),
-                    _c("th", [
+                    _c("td", { staticClass: "fit" }, [
                       domain.activation_status == 1
                         ? _c("i", { staticClass: "fa fa-check green" })
                         : _c("i", { staticClass: "fa fa-close red" })
                     ]),
                     _vm._v(" "),
-                    _c("th", [
+                    _c("td", [
                       domain.activation_type === "file"
                         ? _c(
                             "a",
@@ -39233,11 +39292,14 @@ var render = function() {
                         : _vm._e()
                     ]),
                     _vm._v(" "),
-                    _c("th", [
+                    _c("td", [
                       _c(
                         "button",
                         {
-                          attrs: { title: "remove?" },
+                          attrs: {
+                            disabled: _vm.loading === domain.id,
+                            title: "remove?"
+                          },
                           on: {
                             click: function($event) {
                               return _vm.remove(domain.id)
@@ -39245,7 +39307,25 @@ var render = function() {
                           }
                         },
                         [_c("span", { staticClass: "fa fa-trash red" })]
-                      )
+                      ),
+                      _vm._v(" "),
+                      domain.activation_status != 1
+                        ? _c(
+                            "button",
+                            {
+                              attrs: {
+                                disabled: _vm.loading === domain.id,
+                                title: "confirm?"
+                              },
+                              on: {
+                                click: function($event) {
+                                  return _vm.confirm(domain.domain, domain.id)
+                                }
+                              }
+                            },
+                            [_c("span", { staticClass: "fa fa-check green" })]
+                          )
+                        : _vm._e()
                     ])
                   ])
                 }),

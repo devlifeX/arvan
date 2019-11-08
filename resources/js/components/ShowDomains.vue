@@ -19,13 +19,13 @@
           </thead>
           <tbody>
             <tr v-for="(domain, name, index) in domains" :key="index">
-              <th>{{domain.id}}</th>
-              <th>{{domain.domain}}</th>
-              <th>
+              <td>{{domain.id}}</td>
+              <td>{{domain.domain}}</td>
+              <td class="fit">
                 <i v-if="domain.activation_status==1" class="fa fa-check green"></i>
                 <i v-else class="fa fa-close red"></i>
-              </th>
-              <th>
+              </td>
+              <td>
                 <a
                   v-if="domain.activation_type === 'file'"
                   href="#download"
@@ -35,12 +35,24 @@
                   v-if="domain.activation_type === 'dns'"
                   class="long-text"
                 >arvancloud-{{domain.activation_token}}</div>
-              </th>
-              <th>
-                <button title="remove?" @click="remove(domain.id)">
+              </td>
+              <td>
+                <button
+                  :disabled="loading === domain.id"
+                  title="remove?"
+                  @click="remove(domain.id)"
+                >
                   <span class="fa fa-trash red"></span>
                 </button>
-              </th>
+                <button
+                  :disabled="loading === domain.id"
+                  v-if="domain.activation_status != 1"
+                  title="confirm?"
+                  @click="confirm(domain.domain, domain.id)"
+                >
+                  <span class="fa fa-check green"></span>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -50,7 +62,7 @@
 </template>
 
 <script>
-import { getData, deleteData } from "../api.js";
+import { getData, deleteData, fetchData } from "../api.js";
 
 export default {
   methods: {
@@ -92,6 +104,31 @@ export default {
           this.message.has = true;
         }
       });
+    },
+    confirm(domain, id) {
+      this.loading = id;
+      fetchData(`${this.baseUrl}/domain/confirm`, { domain }).then(data => {
+        if (data.success) {
+          let domains = [];
+          let changedDomain = {};
+
+          changedDomain = this.domains
+            .filter(i => i.id === id)
+            .map(i => ({ ...i, activation_status: 1 }));
+
+          domains = this.domains.filter(i => i.id !== id);
+
+          console.log("changedDomain", changedDomain);
+          console.log("domains", domains);
+
+          this.domains = [...domains, ...changedDomain].sort(
+            (a, b) => a.id - b.id
+          );
+        } else {
+          alert(data.message);
+        }
+        this.loading = 0;
+      });
     }
   },
   mounted() {
@@ -102,6 +139,7 @@ export default {
     return {
       domains: [],
       baseUrl: "",
+      loading: 0,
       message: {
         has: false,
         type: "info",
@@ -117,5 +155,13 @@ export default {
 .long-text {
   overflow-x: scroll;
   white-space: nowrap;
+}
+.table td,
+.table th {
+  white-space: nowrap;
+  width: 1%;
+}
+button:disabled {
+  opacity: 0.3;
 }
 </style>

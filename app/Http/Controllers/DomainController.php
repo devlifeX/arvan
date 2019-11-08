@@ -112,19 +112,21 @@ class DomainController extends Controller
             $this->res(false, ['message' => "Bad domain!"]);
         }
 
-        $isOwner = $requestedDomain->first()->value('owner_id') == auth()->id();
-        if (!$isOwner) {
-            $this->res(false, ['message' => "You are not owner of this domain!"]);
+        if ($requestedDomain->value('owner_id')) {
+            $isOwner = $requestedDomain->value('owner_id') == auth()->id();
+            if (!$isOwner) {
+                $this->res(false, ['message' => "You are not owner of this domain!"]);
+            }
         }
 
-        if ($requestedDomain->first()->value('activation_status')) {
+        if ($requestedDomain->value('activation_status') === 1) {
             $this->res(false, ['message' => "Domain already activated!"]);
         }
     }
 
     protected function getTypeOfActivation($requestedDomain)
     {
-        return $requestedDomain->first()->value('activation_type');
+        return $requestedDomain->value('activation_type');
     }
 
     protected function getDomainOfCurrentUser(Domain $domain, $input)
