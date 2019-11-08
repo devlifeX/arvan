@@ -37,8 +37,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function isDomainExistByUserID($domain)
+    {
+        return $this
+            ->find(auth()->id())
+            ->domains()
+            ->where('domain', '=', $domain)
+            ->count() < 0;
+    }
+
     public function domains()
     {
-        $this->belongsTo(Domain::class);
+        return $this->hasMany(Domain::class);
     }
 }

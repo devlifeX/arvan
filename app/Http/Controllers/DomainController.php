@@ -10,6 +10,7 @@ use App\MyUtil\MyHelper;
 use Spatie\Dns\Dns;
 use Log;
 
+
 class DomainController extends Controller
 {
     use ResponseHandler;
@@ -39,10 +40,15 @@ class DomainController extends Controller
     public function create(Domain $domain, Request $req)
     {
         try {
+
             $validated = $req->validate([
                 'domain' => 'required|active_url',
                 'type' =>  'string|min:3'
             ]);
+
+            if (!auth()->user()->isDomainExistByUserID($validated['domain'])) {
+                throw new \Exception("Domain Already exist!");
+            }
 
             $url = MyHelper::urlSanitize($validated['domain']);
             $activation_type = $this->activationTypesCheck($validated['type']);
@@ -64,7 +70,8 @@ class DomainController extends Controller
             );
         } catch (\Throwable $th) {
             Log::debug($th);
-            return $this->res(false, ['message' => 'Add domain failed!']);
+            $message = $th->getMessage() ?? 'Add domain failed!';
+            return $this->res(false, ['message' => $message]);
         }
     }
 
