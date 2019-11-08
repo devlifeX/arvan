@@ -48,9 +48,7 @@ class DomainController extends Controller
 
             $url = MyHelper::urlSanitize($validated['domain']);
 
-            if (auth()->user()->isDomainExistByUserID($url)) {
-                throw new \Exception("Domain Already exist!");
-            }
+            $this->beforeCreate(['url' => $url], $domain);
 
             $activation_type = $this->activationTypesCheck($validated['type']);
 
@@ -76,6 +74,19 @@ class DomainController extends Controller
             Log::debug($th);
             $message = $th->getMessage() ?? 'Add domain failed!';
             $this->res($message);
+        }
+    }
+
+    protected function beforeCreate($input, $domain)
+    {
+        extract($input);
+        $user = auth()->user();
+        if ($user->isDomainExistByUserID($url)) {
+            $this->res('Domain Already exist!');
+        }
+
+        if ($domain->isDomainConfirmed($url)) {
+            $this->res('Domain Already confirmed!');
         }
     }
 
