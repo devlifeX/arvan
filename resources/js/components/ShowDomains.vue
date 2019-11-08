@@ -26,15 +26,17 @@
                 <i v-else class="fa fa-close red"></i>
               </td>
               <td>
-                <a
-                  v-if="domain.activation_type === 'file'"
-                  href="#download"
-                  @click="downloadLinkHandler(domain.activation_token)"
-                >Download File</a>
-                <div
-                  v-if="domain.activation_type === 'dns'"
-                  class="long-text"
-                >arvancloud-{{domain.activation_token}}</div>
+                <div v-if="domain.activation_status != 1">
+                  <a
+                    v-if="domain.activation_type === 'file'"
+                    href="#download"
+                    @click="downloadLinkHandler(domain.activation_token)"
+                  >Download File</a>
+                  <div
+                    v-if="domain.activation_type === 'dns'"
+                    class="long-text"
+                  >arvancloud-{{domain.activation_token}}</div>
+                </div>
               </td>
               <td>
                 <button

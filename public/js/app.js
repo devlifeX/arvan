@@ -2101,6 +2101,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
@@ -39266,28 +39268,33 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("td", [
-                      domain.activation_type === "file"
-                        ? _c(
-                            "a",
-                            {
-                              attrs: { href: "#download" },
-                              on: {
-                                click: function($event) {
-                                  return _vm.downloadLinkHandler(
-                                    domain.activation_token
+                      domain.activation_status != 1
+                        ? _c("div", [
+                            domain.activation_type === "file"
+                              ? _c(
+                                  "a",
+                                  {
+                                    attrs: { href: "#download" },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.downloadLinkHandler(
+                                          domain.activation_token
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("Download File")]
+                                )
+                              : _vm._e(),
+                            _vm._v(" "),
+                            domain.activation_type === "dns"
+                              ? _c("div", { staticClass: "long-text" }, [
+                                  _vm._v(
+                                    "arvancloud-" +
+                                      _vm._s(domain.activation_token)
                                   )
-                                }
-                              }
-                            },
-                            [_vm._v("Download File")]
-                          )
-                        : _vm._e(),
-                      _vm._v(" "),
-                      domain.activation_type === "dns"
-                        ? _c("div", { staticClass: "long-text" }, [
-                            _vm._v(
-                              "arvancloud-" + _vm._s(domain.activation_token)
-                            )
+                                ])
+                              : _vm._e()
                           ])
                         : _vm._e()
                     ]),
