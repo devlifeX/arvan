@@ -75,7 +75,7 @@ class DomainController extends Controller
         } catch (\Throwable $th) {
             Log::debug($th);
             $message = $th->getMessage() ?? 'Add domain failed!';
-            $this->res(false, ['message' => $message]);
+            $this->res(false,  $message);
         }
     }
 
@@ -95,32 +95,31 @@ class DomainController extends Controller
         if ($type === 'file') {
             $status = $this->confirmDomainByFile($requestedDomain);
         } else if ($type === 'dns') {
-
             $status = $this->confirmDomainByDns($requestedDomain);
         }
 
         if ($status) {
             $this->activateDomain($requestedDomain);
-            $this->res(true, ['message' => "Your domain activate successfully."]);
+            $this->res(true, "Your domain activate successfully.");
         } else {
-            $this->res(false, ['message' => "Your domain activatation FAILED!"]);
+            $this->res(false, "Your domain activatation FAILED!");
         }
     }
 
     protected function beforeConfirm($requestedDomain)
     {
         if ($requestedDomain->count() <= 0) {
-            $this->res(false, ['message' => "Bad domain!"]);
+            $this->res(false, "Bad domain!");
         }
 
         $owner =  $requestedDomain->owner_id;
         $isOwner = $requestedDomain->owner_id == auth()->id();
         if ($owner && $isOwner) {
-            $this->res(false, ['message' => "You are not owner of this domain!"]);
+            $this->res(false, "You are not owner of this domain!");
         }
 
         if ($requestedDomain->activation_status === 1) {
-            $this->res(false, ['message' => "Your domain already activated!"]);
+            $this->res(false, "Your domain already activated!");
         }
     }
 
@@ -173,7 +172,7 @@ class DomainController extends Controller
      */
     public function show(Domain $domain)
     {
-        $domains = $domain->where('user_id', '=', auth()->id())->get();
+        $domains = auth()->user()->domains;
         $newDomains =  $domains->map(function ($domain) {
             return [
                 'id' => $domain['id'],
