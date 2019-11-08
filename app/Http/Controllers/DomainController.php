@@ -61,12 +61,15 @@ class DomainController extends Controller
                 'activation_status' => '0',
                 'activation_type' => $activation_type,
             ];
-            $domain->create($args);
+            $createdDomain = $domain->create($args);
             $this->res(
                 true,
                 [
                     'message' => 'Your Domain added succesfully.',
-                    'token' => $args['activation_token']
+                    'domain' => [
+                        'token' => $createdDomain['activation_token'],
+                        'id' => $createdDomain['id'],
+                    ]
                 ]
             );
         } catch (\Throwable $th) {
@@ -79,27 +82,25 @@ class DomainController extends Controller
     public function confirm(Domain $domain, Request $req)
     {
         $validated = $req->validate([
-            'domain' => 'active_url',
+            'domain_id' => 'required|integer|min:1',
         ]);
 
-        $url = MyHelper::urlSanitize($validated['domain']);
-
-        $requestedDomain = $this->getDomain($domain, $url);
+        $requestedDomain = $this->getDomain($validated);
 
         $this->beforeConfirm($requestedDomain);
 
         $status = false;
 
         $type = $this->getTypeOfActivation($requestedDomain);
-
         if ($type === 'file') {
             $status = $this->confirmDomainByFile($requestedDomain);
         } else if ($type === 'dns') {
+
             $status = $this->confirmDomainByDns($requestedDomain);
         }
 
         if ($status) {
-            $this->activateDomain($domain, $url);
+            $this->activateDomain($requestedDomain);
             $this->res(true, ['message' => "Your domain activate successfully."]);
         } else {
             $this->res(false, ['message' => "Your domain activatation FAILED!"]);
@@ -112,37 +113,25 @@ class DomainController extends Controller
             $this->res(false, ['message' => "Bad domain!"]);
         }
 
-        $owner =  $requestedDomain->value('owner_id');
-        $isOwner = $requestedDomain->value('owner_id') == auth()->id();
+        $owner =  $requestedDomain->owner_id;
+        $isOwner = $requestedDomain->owner_id == auth()->id();
         if ($owner && $isOwner) {
             $this->res(false, ['message' => "You are not owner of this domain!"]);
         }
 
-        if ($requestedDomain->value('activation_status') === 1) {
+        if ($requestedDomain->activation_status === 1) {
             $this->res(false, ['message' => "Your domain already activated!"]);
         }
     }
 
     protected function getTypeOfActivation($requestedDomain)
     {
-        return $requestedDomain->value('activation_type');
+        return $requestedDomain->activation_type;
     }
 
-    protected function getDomainOfCurrentUser(Domain $domain, $input)
+    protected function activateDomain($requestedDomain)
     {
-        return $domain->where([
-            ['user_id', '=',  auth()->id()],
-            ['domain', $input]
-        ])->get();
-    }
-
-    protected function activateDomain(Domain $domain, $input)
-    {
-        return $domain
-            ->where([
-                ['user_id', '=', auth()->id()],
-                ['domain', $input]
-            ])
+        return $requestedDomain
             ->update([
                 'activation_status' => true,
                 'owner_id' => auth()->id()
@@ -152,7 +141,7 @@ class DomainController extends Controller
     protected function confirmDomainByFile($requestedDomain)
     {
         try {
-            $item = $requestedDomain->first()->toArray();
+            $item = $requestedDomain->toArray();
             $result = file_get_contents($item['domain'] . '/' . $this->prefixActivation . $item['activation_token'] . '.txt');
             if (trim($result) === $item['activation_token']) {
                 return true;
@@ -167,7 +156,7 @@ class DomainController extends Controller
     protected function confirmDomainByDns($requestedDomain)
     {
         try {
-            $item = $requestedDomain->first()->toArray();
+            $item = $requestedDomain->toArray();
             $txtRecords  = $this->dnsTxtRecords($item['domain']);
             return $this->dnsHasToken($txtRecords, $item['activation_token']);
         } catch (\Throwable $th) {
@@ -245,11 +234,13 @@ class DomainController extends Controller
         }
     }
 
-    public function getDomain(Domain $domain, $url)
+    public function getDomain($input)
     {
-        return auth()->user()->find(auth()->id())
+        extract($input);
+        return auth()
+            ->user()
             ->domains()
-            ->where('domain', '=', $url);
+            ->where('id', $domain_id)->first();
     }
 
     public function delete(Domain $domain, $id)

@@ -50,7 +50,7 @@
                   :disabled="loading === domain.id"
                   v-if="domain.activation_status != 1"
                   title="confirm?"
-                  @click="confirm(domain.domain, domain.id)"
+                  @click="confirm(domain.id)"
                 >
                   <span class="fa fa-check green"></span>
                 </button>
@@ -107,30 +107,29 @@ export default {
         }
       });
     },
-    confirm(domain, id) {
+    confirm(id) {
       this.loading = id;
-      fetchData(`${this.baseUrl}/domain/confirm`, { domain }).then(data => {
-        if (data.success) {
-          let domains = [];
-          let changedDomain = {};
+      fetchData(`${this.baseUrl}/domain/confirm`, { domain_id: id }).then(
+        data => {
+          if (data.success) {
+            let domains = [];
+            let changedDomain = {};
 
-          changedDomain = this.domains
-            .filter(i => i.id === id)
-            .map(i => ({ ...i, activation_status: 1 }));
+            changedDomain = this.domains
+              .filter(i => i.id === id)
+              .map(i => ({ ...i, activation_status: 1 }));
 
-          domains = this.domains.filter(i => i.id !== id);
+            domains = this.domains.filter(i => i.id !== id);
 
-          console.log("changedDomain", changedDomain);
-          console.log("domains", domains);
-
-          this.domains = [...domains, ...changedDomain].sort(
-            (a, b) => a.id - b.id
-          );
-        } else {
-          alert(data.message);
+            this.domains = [...domains, ...changedDomain].sort(
+              (a, b) => a.id - b.id
+            );
+          } else {
+            alert(data.message);
+          }
+          this.loading = 0;
         }
-        this.loading = 0;
-      });
+      );
     }
   },
   mounted() {

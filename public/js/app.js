@@ -1931,19 +1931,19 @@ __webpack_require__.r(__webpack_exports__);
       _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit("add-domain-clicked");
     },
     addDomainClickedHandler: function addDomainClickedHandler(e) {
-      if (!e.validateUrl(e.domain)) {
+      if (!e.validateUrl(e.domainName)) {
         alert("Please enter a valid URL!");
         return;
       }
 
       e.loading = true;
       Object(_api_js__WEBPACK_IMPORTED_MODULE_1__["fetchData"])("".concat(e.baseUrl, "/domain/create"), {
-        domain: e.domain,
+        domain: e.domainName,
         type: e.type
       }).then(function (data) {
         if (data.success) {
           e.step = 1;
-          e.token = data.token;
+          e.domain = data.domain;
         } else {
           alert(data.message);
         }
@@ -1956,8 +1956,8 @@ __webpack_require__.r(__webpack_exports__);
     },
     downloadLinkHandler: function downloadLinkHandler(e) {
       var element = document.createElement("a");
-      element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(e.token));
-      element.setAttribute("download", "arvancloud-".concat(e.token, ".txt"));
+      element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(e.domain.token));
+      element.setAttribute("download", "arvancloud-".concat(e.domain.token, ".txt"));
       element.style.display = "none";
       document.body.appendChild(element);
       element.click();
@@ -1966,45 +1966,44 @@ __webpack_require__.r(__webpack_exports__);
     confirmDomain: function confirmDomain() {
       _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$emit("confirm-domain-clicked");
     },
-    confirmDomainHandler: function confirmDomainHandler(e) {
-      e.loading = true;
-      Object(_api_js__WEBPACK_IMPORTED_MODULE_1__["fetchData"])("".concat(e.baseUrl, "/domain/confirm"), {
-        domain: e.domain
+    confirmDomainHandler: function confirmDomainHandler() {
+      var _this = this;
+
+      this.loading = true;
+      Object(_api_js__WEBPACK_IMPORTED_MODULE_1__["fetchData"])("".concat(this.baseUrl, "/domain/confirm"), {
+        domain_id: this.domain.id
       }).then(function (data) {
         console.log(data);
 
         if (data.success) {
-          e.step = 2;
+          _this.step = 2;
         } else {
           alert(data.message);
         }
 
-        e.loading = false;
+        _this.loading = false;
       });
     }
   },
   data: function data() {
     return {
-      domain: "",
+      domainName: "",
       type: "dns",
       loading: false,
       baseUrl: "",
       step: 0,
-      token: ""
+      domain: {}
     };
   },
   created: function created() {
-    var _this = this;
+    var _this2 = this;
 
     this.baseUrl = "".concat(window.location.origin);
     _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on("add-domain-clicked", function () {
-      _this.addDomainClickedHandler(_this);
+      _this2.addDomainClickedHandler(_this2);
     });
     _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on("download-link-clicked", function () {
-      _this.downloadLinkHandler(_this);
-    });
-    _ServerBus__WEBPACK_IMPORTED_MODULE_0__["default"].$on("confirm-domain-clicked", function () {
-      _this.confirmDomainHandler(_this);
+      _this2.downloadLinkHandler(_this2);
     });
   },
   components: {
@@ -2149,12 +2148,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }
       });
     },
-    confirm: function confirm(domain, id) {
+    confirm: function confirm(id) {
       var _this3 = this;
 
       this.loading = id;
       Object(_api_js__WEBPACK_IMPORTED_MODULE_0__["fetchData"])("".concat(this.baseUrl, "/domain/confirm"), {
-        domain: domain
+        domain_id: id
       }).then(function (data) {
         if (data.success) {
           var domains = [];
@@ -2169,8 +2168,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           domains = _this3.domains.filter(function (i) {
             return i.id !== id;
           });
-          console.log("changedDomain", changedDomain);
-          console.log("domains", domains);
           _this3.domains = [].concat(_toConsumableArray(domains), _toConsumableArray(changedDomain)).sort(function (a, b) {
             return a.id - b.id;
           });
@@ -39060,8 +39057,8 @@ var render = function() {
                     {
                       name: "model",
                       rawName: "v-model",
-                      value: _vm.domain,
-                      expression: "domain"
+                      value: _vm.domainName,
+                      expression: "domainName"
                     }
                   ],
                   staticClass: "form-control",
@@ -39070,13 +39067,13 @@ var render = function() {
                     id: "domain",
                     placeholder: "yourdomain.com"
                   },
-                  domProps: { value: _vm.domain },
+                  domProps: { value: _vm.domainName },
                   on: {
                     input: function($event) {
                       if ($event.target.composing) {
                         return
                       }
-                      _vm.domain = $event.target.value
+                      _vm.domainName = $event.target.value
                     }
                   }
                 })
@@ -39168,7 +39165,7 @@ var render = function() {
                         _c(
                           "div",
                           { staticClass: "alert alert-info long-text" },
-                          [_vm._v("arvancloud-" + _vm._s(_vm.token))]
+                          [_vm._v("arvancloud-" + _vm._s(_vm.domain.token))]
                         )
                       ])
                     : _vm._e(),
@@ -39196,11 +39193,11 @@ var render = function() {
                       attrs: { loading: _vm.loading },
                       nativeOn: {
                         click: function($event) {
-                          return _vm.confirmDomain($event)
+                          return _vm.confirmDomainHandler($event)
                         }
                       }
                     },
-                    [_vm._v("Confirm Domain " + _vm._s(_vm.domain))]
+                    [_vm._v("Confirm Domain " + _vm._s(_vm.domainName))]
                   )
                 ],
                 1
@@ -39326,7 +39323,7 @@ var render = function() {
                               },
                               on: {
                                 click: function($event) {
-                                  return _vm.confirm(domain.domain, domain.id)
+                                  return _vm.confirm(domain.id)
                                 }
                               }
                             },

@@ -9,7 +9,7 @@
             <small id="passwordHelpInline" class="text-muted">Please enter you domain to continue</small>
 
             <input
-              v-model="domain"
+              v-model="domainName"
               type="url"
               class="form-control"
               id="domain"
@@ -36,7 +36,7 @@
           <div class="form-group">
             <div v-if="type==='dns'">
               Please create TXT record and put below content in there.
-              <div class="alert alert-info long-text">arvancloud-{{token}}</div>
+              <div class="alert alert-info long-text">arvancloud-{{domain.token}}</div>
             </div>
             <div v-if="type==='file'">
               Please download
@@ -45,8 +45,8 @@
             </div>
             <VueLoadingButton
               :loading="loading"
-              @click.native="confirmDomain"
-            >Confirm Domain {{domain}}</VueLoadingButton>
+              @click.native="confirmDomainHandler"
+            >Confirm Domain {{domainName}}</VueLoadingButton>
           </div>
         </form>
       </div>
@@ -78,18 +78,18 @@ export default {
       serverBus.$emit("add-domain-clicked");
     },
     addDomainClickedHandler: e => {
-      if (!e.validateUrl(e.domain)) {
+      if (!e.validateUrl(e.domainName)) {
         alert("Please enter a valid URL!");
         return;
       }
       e.loading = true;
       fetchData(`${e.baseUrl}/domain/create`, {
-        domain: e.domain,
+        domain: e.domainName,
         type: e.type
       }).then(data => {
         if (data.success) {
           e.step = 1;
-          e.token = data.token;
+          e.domain = data.domain;
         } else {
           alert(data.message);
         }
@@ -103,9 +103,9 @@ export default {
       let element = document.createElement("a");
       element.setAttribute(
         "href",
-        "data:text/plain;charset=utf-8," + encodeURIComponent(e.token)
+        "data:text/plain;charset=utf-8," + encodeURIComponent(e.domain.token)
       );
-      element.setAttribute("download", `arvancloud-${e.token}.txt`);
+      element.setAttribute("download", `arvancloud-${e.domain.token}.txt`);
       element.style.display = "none";
       document.body.appendChild(element);
       element.click();
@@ -114,29 +114,29 @@ export default {
     confirmDomain: () => {
       serverBus.$emit("confirm-domain-clicked");
     },
-    confirmDomainHandler: e => {
-      e.loading = true;
-      fetchData(`${e.baseUrl}/domain/confirm`, { domain: e.domain }).then(
-        data => {
-          console.log(data);
-          if (data.success) {
-            e.step = 2;
-          } else {
-            alert(data.message);
-          }
-          e.loading = false;
+    confirmDomainHandler() {
+      this.loading = true;
+      fetchData(`${this.baseUrl}/domain/confirm`, {
+        domain_id: this.domain.id
+      }).then(data => {
+        console.log(data);
+        if (data.success) {
+          this.step = 2;
+        } else {
+          alert(data.message);
         }
-      );
+        this.loading = false;
+      });
     }
   },
   data() {
     return {
-      domain: "",
+      domainName: "",
       type: "dns",
       loading: false,
       baseUrl: "",
       step: 0,
-      token: ""
+      domain: {}
     };
   },
   created() {
@@ -146,9 +146,6 @@ export default {
     });
     serverBus.$on("download-link-clicked", () => {
       this.downloadLinkHandler(this);
-    });
-    serverBus.$on("confirm-domain-clicked", () => {
-      this.confirmDomainHandler(this);
     });
   },
   components: {
