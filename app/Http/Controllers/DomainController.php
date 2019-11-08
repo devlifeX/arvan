@@ -101,9 +101,9 @@ class DomainController extends Controller
         if ($status) {
             $this->activateDomain($domain, $url);
             $this->res(true, ['message' => "Your domain activate successfully."]);
+        } else {
+            $this->res(false, ['message' => "Your domain activatation FAILED!"]);
         }
-
-        $this->res(false, ['message' => "Something went wrong!"]);
     }
 
     protected function beforeConfirm($requestedDomain)
@@ -112,15 +112,14 @@ class DomainController extends Controller
             $this->res(false, ['message' => "Bad domain!"]);
         }
 
-        if ($requestedDomain->value('owner_id')) {
-            $isOwner = $requestedDomain->value('owner_id') == auth()->id();
-            if (!$isOwner) {
-                $this->res(false, ['message' => "You are not owner of this domain!"]);
-            }
+        $owner =  $requestedDomain->value('owner_id');
+        $isOwner = $requestedDomain->value('owner_id') == auth()->id();
+        if ($owner && $isOwner) {
+            $this->res(false, ['message' => "You are not owner of this domain!"]);
         }
 
         if ($requestedDomain->value('activation_status') === 1) {
-            $this->res(false, ['message' => "Domain already activated!"]);
+            $this->res(false, ['message' => "Your domain already activated!"]);
         }
     }
 
