@@ -112,12 +112,6 @@ class DomainController extends Controller
             $this->res("Bad domain!");
         }
 
-        $owner =  $requestedDomain->owner_id;
-        $isOwner = $requestedDomain->owner_id == auth()->id();
-        if ($owner) {
-            $this->res("You are not owner of this domain!");
-        }
-
         if ($requestedDomain->activation_status === 1) {
             $this->res("Your domain already activated!");
         }
