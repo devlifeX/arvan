@@ -62,7 +62,7 @@ class DomainController extends Controller
                 'activation_type' => $activation_type,
             ];
             $domain->create($args);
-            return $this->res(
+            $this->res(
                 true,
                 [
                     'message' => 'Your Domain added succesfully.',
@@ -72,7 +72,7 @@ class DomainController extends Controller
         } catch (\Throwable $th) {
             Log::debug($th);
             $message = $th->getMessage() ?? 'Add domain failed!';
-            return $this->res(false, ['message' => $message]);
+            $this->res(false, ['message' => $message]);
         }
     }
 
@@ -84,15 +84,14 @@ class DomainController extends Controller
 
         $url = MyHelper::urlSanitize($validated['domain']);
 
-        $requestedDomain = $this->getDomainOfCurrentUser($domain, $url);
+        $requestedDomain = $this->getDomain($domain, $url);
 
-        if ($requestedDomain->isEmpty()) {
-            return $this->res(false, ['message' => "Bad domain!"]);
-        }
+        $this->beforeConfirm($requestedDomain);
 
         $status = false;
 
         $type = $this->getTypeOfActivation($requestedDomain);
+
         if ($type === 'file') {
             $status = $this->confirmDomainByFile($requestedDomain);
         } else if ($type === 'dns') {
@@ -101,10 +100,26 @@ class DomainController extends Controller
 
         if ($status) {
             $this->activateDomain($domain, $url);
-            return $this->res(true, ['message' => "Your domain activate successfully."]);
+            $this->res(true, ['message' => "Your domain activate successfully."]);
         }
 
-        return $this->res(false, ['message' => "Something went wrong!"]);
+        $this->res(false, ['message' => "Something went wrong!"]);
+    }
+
+    protected function beforeConfirm($requestedDomain)
+    {
+        if ($requestedDomain->count() <= 0) {
+            $this->res(false, ['message' => "Bad domain!"]);
+        }
+
+        $isOwner = $requestedDomain->first()->value('owner_id') == auth()->id();
+        if (!$isOwner) {
+            $this->res(false, ['message' => "You are not owner of this domain!"]);
+        }
+
+        if ($requestedDomain->first()->value('activation_status')) {
+            $this->res(false, ['message' => "Domain already activated!"]);
+        }
     }
 
     protected function getTypeOfActivation($requestedDomain)
@@ -127,7 +142,10 @@ class DomainController extends Controller
                 ['user_id', '=', auth()->id()],
                 ['domain', $input]
             ])
-            ->update(['activation_status' => true]);
+            ->update([
+                'activation_status' => true,
+                'owner_id' => auth()->id()
+            ]);
     }
 
     protected function confirmDomainByFile($requestedDomain)
@@ -176,7 +194,7 @@ class DomainController extends Controller
                 'activation_status' => $domain['activation_status'],
             ];
         });
-        return $this->res(true, ['domains' => $newDomains]);
+        $this->res(true, ['domains' => $newDomains]);
     }
 
     protected function dnsTxtRecords($url)
@@ -226,14 +244,21 @@ class DomainController extends Controller
         }
     }
 
+    public function getDomain(Domain $domain, $url)
+    {
+        return auth()->user()->find(auth()->id())
+            ->domains()
+            ->where('domain', '=', $url);
+    }
+
     public function delete(Domain $domain, $id)
     {
         $domain = $domain->findOrFail($id);
         if ($domain->user_id === auth()->id()) {
             $domain->delete();
-            return $this->res(true);
+            $this->res(true);
         }
 
-        return $this->res(false);
+        $this->res(false);
     }
 }

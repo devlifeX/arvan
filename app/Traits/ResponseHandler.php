@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use Illuminate\Http\Response;
+
 trait ResponseHandler
 {
     protected $response = [];
@@ -17,6 +19,8 @@ trait ResponseHandler
         }
 
         $this->response = array_merge($this->response, $override);
-        return $this->response;
+
+        response()->json($this->response)->send();
+        exit;
     }
 }
