@@ -40,7 +40,7 @@ class DomainController extends Controller
     {
         try {
             $validated = $req->validate([
-                'domain' => 'required|url',
+                'domain' => 'required|active_url',
                 'type' =>  'string|min:3'
             ]);
 
@@ -71,7 +71,7 @@ class DomainController extends Controller
     public function confirm(Domain $domain, Request $req)
     {
         $validated = $req->validate([
-            'domain' => 'url',
+            'domain' => 'active_url',
         ]);
 
         $url = MyHelper::urlSanitize($validated['domain']);
