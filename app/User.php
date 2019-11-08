@@ -43,7 +43,7 @@ class User extends Authenticatable
             ->find(auth()->id())
             ->domains()
             ->where('domain', '=', $domain)
-            ->count() < 0;
+            ->count() > 0;
     }
 
     public function domains()

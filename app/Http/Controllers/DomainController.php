@@ -46,11 +46,12 @@ class DomainController extends Controller
                 'type' =>  'string|min:3'
             ]);
 
-            if (!auth()->user()->isDomainExistByUserID($validated['domain'])) {
+            $url = MyHelper::urlSanitize($validated['domain']);
+
+            if (auth()->user()->isDomainExistByUserID($url)) {
                 throw new \Exception("Domain Already exist!");
             }
 
-            $url = MyHelper::urlSanitize($validated['domain']);
             $activation_type = $this->activationTypesCheck($validated['type']);
 
             $args = [
