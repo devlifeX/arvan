@@ -8,7 +8,7 @@ trait ResponseHandler
 {
     protected $response = [];
 
-    public function res(bool $status, $input = null)
+    public function res($input = null, bool $status = false)
     {
         $override = [];
         if (is_string($input) && !empty($input)) {

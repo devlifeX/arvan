@@ -63,19 +63,19 @@ class DomainController extends Controller
             ];
             $createdDomain = $domain->create($args);
             $this->res(
-                true,
                 [
                     'message' => 'Your Domain added succesfully.',
                     'domain' => [
                         'token' => $createdDomain['activation_token'],
                         'id' => $createdDomain['id'],
                     ]
-                ]
+                ],
+                true
             );
         } catch (\Throwable $th) {
             Log::debug($th);
             $message = $th->getMessage() ?? 'Add domain failed!';
-            $this->res(false,  $message);
+            $this->res($message);
         }
     }
 
@@ -100,26 +100,26 @@ class DomainController extends Controller
 
         if ($status) {
             $this->activateDomain($requestedDomain);
-            $this->res(true, "Your domain activate successfully.");
+            $this->res("Your domain activate successfully.", true);
         } else {
-            $this->res(false, "Your domain activatation FAILED!");
+            $this->res("Your domain activatation FAILED!");
         }
     }
 
     protected function beforeConfirm($requestedDomain)
     {
         if ($requestedDomain->count() <= 0) {
-            $this->res(false, "Bad domain!");
+            $this->res("Bad domain!");
         }
 
         $owner =  $requestedDomain->owner_id;
         $isOwner = $requestedDomain->owner_id == auth()->id();
-        if ($owner && $isOwner) {
-            $this->res(false, "You are not owner of this domain!");
+        if ($owner) {
+            $this->res("You are not owner of this domain!");
         }
 
         if ($requestedDomain->activation_status === 1) {
-            $this->res(false, "Your domain already activated!");
+            $this->res("Your domain already activated!");
         }
     }
 
@@ -183,7 +183,7 @@ class DomainController extends Controller
                 'activation_status' => $domain['activation_status'],
             ];
         });
-        $this->res(true, ['domains' => $newDomains]);
+        $this->res(['domains' => $newDomains], true);
     }
 
     protected function dnsTxtRecords($url)
@@ -247,9 +247,9 @@ class DomainController extends Controller
         $domain = $domain->findOrFail($id);
         if ($domain->user_id === auth()->id()) {
             $domain->delete();
-            $this->res(true);
+            $this->res([], true);
         }
 
-        $this->res(false);
+        $this->res([], false);
     }
 }
