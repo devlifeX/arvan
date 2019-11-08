@@ -13,15 +13,18 @@ class Domain extends Migration
      */
     public function up()
     {
+
         Schema::create('domains', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->index();
-            $table->string('domain')->unique()->index();
+            $table->unsignedBigInteger('owner_id')->nullable();
+            $table->string('domain')->index();
             $table->string('activation_token');
             $table->boolean('activation_status')->default(false);
             $table->string('activation_type')->default('file');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('owner_id')->references('id')->on('users');
         });
     }
 

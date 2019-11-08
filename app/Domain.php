@@ -10,6 +10,6 @@ class Domain extends Model
 
     public function users()
     {
-        $this->hasOne(User::class);
+        return $this->hasOne(User::class);
     }
 }
