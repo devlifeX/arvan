@@ -15,7 +15,7 @@ class MyHelper
         try {
             return self::parseURL($url)['scheme'];
         } catch (\Throwable $th) {
-            throw new Exception("Bad Url scheme");
+            throw new \Exception("Bad Url scheme");
         }
     }
 
@@ -28,7 +28,7 @@ class MyHelper
             $rev = array_reverse($parts);
             return $rev[1] . '.' . $rev[0];
         } catch (\Throwable $th) {
-            throw new Exception("Bad Url host");
+            throw new \Exception("Bad Url host");
         }
     }
 
