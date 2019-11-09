@@ -39240,102 +39240,108 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-md-8" }, [
+      _c("div", { staticClass: "col-md-12" }, [
         _vm.message.has || _vm.domains.length <= 0
           ? _c("div", [
               _c("div", { class: "alert alert-" + _vm.message.type }, [
                 _vm._v(_vm._s(_vm.message.text))
               ])
             ])
-          : _c("table", { staticClass: "table table-striped table-hover" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _c(
-                "tbody",
-                _vm._l(_vm.domains, function(domain, name, index) {
-                  return _c("tr", { key: index }, [
-                    _c("td", [_vm._v(_vm._s(domain.id))]),
-                    _vm._v(" "),
-                    _c("td", [_vm._v(_vm._s(domain.domain))]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "fit" }, [
-                      domain.activation_status == 1
-                        ? _c("i", { staticClass: "fa fa-check green" })
-                        : _c("i", { staticClass: "fa fa-close red" })
-                    ]),
-                    _vm._v(" "),
-                    _c("td", [
-                      domain.activation_status != 1
-                        ? _c("div", [
-                            domain.activation_type === "file"
-                              ? _c(
-                                  "a",
-                                  {
-                                    attrs: { href: "#download" },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.downloadLinkHandler(
-                                          domain.activation_token
-                                        )
-                                      }
-                                    }
-                                  },
-                                  [_vm._v("Download File")]
-                                )
-                              : _vm._e(),
-                            _vm._v(" "),
-                            domain.activation_type === "dns"
-                              ? _c("div", { staticClass: "long-text" }, [
-                                  _vm._v(
-                                    "arvancloud-" +
-                                      _vm._s(domain.activation_token)
-                                  )
-                                ])
-                              : _vm._e()
-                          ])
-                        : _vm._e()
-                    ]),
-                    _vm._v(" "),
-                    _c("td", [
-                      _c(
-                        "button",
-                        {
-                          attrs: {
-                            disabled: _vm.loading === domain.id,
-                            title: "remove?"
-                          },
-                          on: {
-                            click: function($event) {
-                              return _vm.remove(domain.id)
-                            }
-                          }
-                        },
-                        [_c("span", { staticClass: "fa fa-trash red" })]
-                      ),
+          : _c(
+              "table",
+              {
+                staticClass: "table table-striped table-hover table-responsive"
+              },
+              [
+                _vm._m(0),
+                _vm._v(" "),
+                _c(
+                  "tbody",
+                  _vm._l(_vm.domains, function(domain, name, index) {
+                    return _c("tr", { key: index }, [
+                      _c("td", [_vm._v(_vm._s(domain.id))]),
                       _vm._v(" "),
-                      domain.activation_status != 1
-                        ? _c(
-                            "button",
-                            {
-                              attrs: {
-                                disabled: _vm.loading === domain.id,
-                                title: "confirm?"
-                              },
-                              on: {
-                                click: function($event) {
-                                  return _vm.confirm(domain.id)
-                                }
-                              }
+                      _c("td", [_vm._v(_vm._s(domain.domain))]),
+                      _vm._v(" "),
+                      _c("td", { staticClass: "fit" }, [
+                        domain.activation_status == 1
+                          ? _c("i", { staticClass: "fa fa-check green" })
+                          : _c("i", { staticClass: "fa fa-close red" })
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        domain.activation_status != 1
+                          ? _c("div", [
+                              domain.activation_type === "file"
+                                ? _c(
+                                    "a",
+                                    {
+                                      attrs: { href: "#download" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.downloadLinkHandler(
+                                            domain.activation_token
+                                          )
+                                        }
+                                      }
+                                    },
+                                    [_vm._v("Download File")]
+                                  )
+                                : _vm._e(),
+                              _vm._v(" "),
+                              domain.activation_type === "dns"
+                                ? _c("div", { staticClass: "long-text" }, [
+                                    _vm._v(
+                                      "arvancloud-" +
+                                        _vm._s(domain.activation_token)
+                                    )
+                                  ])
+                                : _vm._e()
+                            ])
+                          : _vm._e()
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _c(
+                          "button",
+                          {
+                            attrs: {
+                              disabled: _vm.loading === domain.id,
+                              title: "remove?"
                             },
-                            [_c("span", { staticClass: "fa fa-check green" })]
-                          )
-                        : _vm._e()
+                            on: {
+                              click: function($event) {
+                                return _vm.remove(domain.id)
+                              }
+                            }
+                          },
+                          [_c("span", { staticClass: "fa fa-trash red" })]
+                        ),
+                        _vm._v(" "),
+                        domain.activation_status != 1
+                          ? _c(
+                              "button",
+                              {
+                                attrs: {
+                                  disabled: _vm.loading === domain.id,
+                                  title: "confirm?"
+                                },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.confirm(domain.id)
+                                  }
+                                }
+                              },
+                              [_c("span", { staticClass: "fa fa-check green" })]
+                            )
+                          : _vm._e()
+                      ])
                     ])
-                  ])
-                }),
-                0
-              )
-            ])
+                  }),
+                  0
+                )
+              ]
+            )
       ])
     ])
   ])

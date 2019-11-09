@@ -1,13 +1,13 @@
 <template>
   <div class="container">
     <div class="row">
-      <div class="col-md-8">
+      <div class="col-md-12">
         <!-- message -->
         <div v-if="message.has || domains.length <= 0">
           <div :class="'alert alert-' + message.type">{{message.text}}</div>
         </div>
         <!-- table -->
-        <table v-else class="table table-striped table-hover">
+        <table v-else class="table table-striped table-hover table-responsive">
           <thead>
             <tr>
               <th>domain id</th>
