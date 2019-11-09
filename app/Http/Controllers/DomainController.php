@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain;
+use App\DomainExclude;
 use App\Traits\ResponseHandler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -80,6 +81,11 @@ class DomainController extends Controller
     protected function beforeCreate($input, $domain)
     {
         extract($input);
+
+        if ($this->isExcluded($url)) {
+            $this->res('Can not add this domain!');
+        }
+
         $user = auth()->user();
         if ($user->isDomainExistByUserID($url)) {
             $this->res('Domain Already exist!');
@@ -256,5 +262,11 @@ class DomainController extends Controller
         }
 
         $this->res([], false);
+    }
+
+    public function isExcluded($url)
+    {
+        $host = MyHelper::getHost($url);
+        return DomainExclude::where('domain', '=', $host)->count() >= 1;
     }
 }
