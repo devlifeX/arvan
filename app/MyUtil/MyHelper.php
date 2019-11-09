@@ -5,26 +5,35 @@ namespace App\MyUtil;
 class MyHelper
 {
 
-    static public function getHost($url)
+    static public function parseURL($url)
+    {
+        return parse_url(strtolower($url));
+    }
+
+    static public function getScheme($url)
     {
         try {
-            $parts = explode('.', $url);
-            if (count($parts) === 2) return $url;
-            $rev = array_reverse($parts);
-            return $rev[1] . '.' . $rev[0];
+            return self::parseURL($url)['scheme'];
         } catch (\Throwable $th) {
-            return null;
+            throw new Exception("Bad Url scheme");
         }
     }
 
-    static public function urlSanitize($url)
+    static public function getHost($url)
     {
-        $newUrl = parse_url(strtolower($url));
-        $host  = self::getHost($newUrl['host']);
-        if (is_null($host) || empty($host)) {
-            throw new \Exception("Bad URL");
+        try {
+            $host = self::parseURL($url)['host'];
+            $parts = explode('.', $host);
+            if (count($parts) === 2) return $host;
+            $rev = array_reverse($parts);
+            return $rev[1] . '.' . $rev[0];
+        } catch (\Throwable $th) {
+            throw new Exception("Bad Url host");
         }
-        $output =  $newUrl['scheme'] . "://www." . $host;
-        return $output;
+    }
+
+    static public function getFullDoamin($url)
+    {
+        return self::getScheme($url) . "://www." . self::getHost($url);
     }
 }

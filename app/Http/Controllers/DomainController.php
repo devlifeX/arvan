@@ -47,15 +47,17 @@ class DomainController extends Controller
                 'type' =>  'string|min:3'
             ]);
 
-            $url = MyHelper::urlSanitize($validated['domain']);
+            $host = MyHelper::getHost($validated['domain']);
+            $full_domain = MyHelper::getFullDoamin($validated['domain']);
 
-            $this->beforeCreate(['url' => $url], $domain);
+            $this->beforeCreate(['url' => $host], $domain);
 
             $activation_type = $this->activationTypesCheck($validated['type']);
 
             $args = [
                 'user_id' => auth()->id(),
-                'domain' => $url,
+                'domain' => $host,
+                'full_domain' => $full_domain,
                 'activation_token' => Str::random(60),
                 'activation_status' => '0',
                 'activation_type' => $activation_type,
@@ -67,6 +69,7 @@ class DomainController extends Controller
                     'domain' => [
                         'token' => $createdDomain['activation_token'],
                         'id' => $createdDomain['id'],
+                        'domain' => $createdDomain['domain'],
                     ]
                 ],
                 true
@@ -152,7 +155,7 @@ class DomainController extends Controller
     {
         try {
             $item = $requestedDomain->toArray();
-            $result = file_get_contents($item['domain'] . '/' . $this->prefixActivation . $item['activation_token'] . '.txt');
+            $result = file_get_contents($item['full_domain'] . '/' . $this->prefixActivation . $item['activation_token'] . '.txt');
             if (trim($result) === $item['activation_token']) {
                 return true;
             }
@@ -167,7 +170,7 @@ class DomainController extends Controller
     {
         try {
             $item = $requestedDomain->toArray();
-            $txtRecords  = $this->dnsTxtRecords($item['domain']);
+            $txtRecords  = $this->dnsTxtRecords($item['full_domain']);
             return $this->dnsHasToken($txtRecords, $item['activation_token']);
         } catch (\Throwable $th) {
             Log::debug($th);
@@ -266,7 +269,6 @@ class DomainController extends Controller
 
     public function isExcluded($url)
     {
-        $host = MyHelper::getHost($url);
-        return DomainExclude::where('domain', '=', $host)->count() >= 1;
+        return DomainExclude::where('domain', '=', $url)->count() >= 1;
     }
 }

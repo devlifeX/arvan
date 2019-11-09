@@ -19,6 +19,7 @@ class Domain extends Migration
             $table->unsignedBigInteger('user_id')->index();
             $table->unsignedBigInteger('owner_id')->nullable();
             $table->string('domain')->index();
+            $table->string('full_domain');
             $table->string('activation_token');
             $table->boolean('activation_status')->default(false);
             $table->string('activation_type')->default('file');
