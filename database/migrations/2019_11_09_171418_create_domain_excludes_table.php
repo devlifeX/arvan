@@ -15,7 +15,7 @@ class CreateDomainExcludesTable extends Migration
     {
         Schema::create('domain_excludes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('domain')->index();
+            $table->string('domain')->unique()->index();
             $table->timestamps();
         });
     }
